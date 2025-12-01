@@ -1,2 +1,42 @@
+# Database
 /db.sqlite3
+
+# IDE
 .idea
+.vscode
+
+# Python
+*.pyc
+*.pyo
+__pycache__/
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+
+# Virtual Environment
+venv/
+env/
+ENV/
+.venv
+
+# Environment Variables
+.env
+.flaskenv
+
+# Flask
+instance/
+.webassets-cache
+
+# Model files (comment out if you want to track them)
+# *.pkl
+# *.joblib
+# *.h5
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log

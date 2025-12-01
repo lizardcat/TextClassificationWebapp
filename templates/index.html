@@ -1,26 +1,450 @@
-<!-- html -->
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <title>Text Classifier</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Essay Classifier</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <style>
+        :root {
+            --color-1: #E0BBE4;
+            --color-2: #957DAD;
+            --color-3: #D291BC;
+            --color-4: #FEC8D8;
+            --color-5: #FFDFD3;
+            --shadow-1: 0 2px 4px rgba(149, 125, 173, 0.1);
+            --shadow-2: 0 4px 8px rgba(149, 125, 173, 0.15);
+            --shadow-3: 0 8px 16px rgba(149, 125, 173, 0.2);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: linear-gradient(135deg, var(--color-5) 0%, var(--color-1) 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            width: 100%;
+            margin: 0 auto;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            animation: fadeInDown 0.6s ease-out;
+        }
+
+        .header h1 {
+            color: var(--color-2);
+            font-size: 2.5rem;
+            font-weight: 500;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        .header-icon {
+            font-size: 2.5rem;
+            color: var(--color-3);
+        }
+
+        .header p {
+            color: var(--color-2);
+            font-size: 1.1rem;
+            font-weight: 300;
+        }
+
+        .card {
+            background: white;
+            border-radius: 16px;
+            box-shadow: var(--shadow-3);
+            padding: 40px;
+            margin-bottom: 24px;
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        .form-group {
+            margin-bottom: 24px;
+        }
+
+        label {
+            display: block;
+            color: var(--color-2);
+            font-weight: 500;
+            margin-bottom: 12px;
+            font-size: 1rem;
+        }
+
+        textarea {
+            width: 100%;
+            min-height: 200px;
+            padding: 16px;
+            border: 2px solid var(--color-1);
+            border-radius: 12px;
+            font-family: 'Roboto', sans-serif;
+            font-size: 1rem;
+            resize: vertical;
+            transition: all 0.3s ease;
+            background-color: #fafafa;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: var(--color-2);
+            background-color: white;
+            box-shadow: 0 0 0 3px rgba(149, 125, 173, 0.1);
+        }
+
+        textarea::placeholder {
+            color: #aaa;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, var(--color-2) 0%, var(--color-3) 100%);
+            color: white;
+            padding: 14px 32px;
+            border: none;
+            border-radius: 28px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: var(--shadow-2);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-3);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn-icon {
+            font-size: 1.2rem;
+        }
+
+        .result-card {
+            background: white;
+            border-radius: 16px;
+            padding: 32px;
+            box-shadow: var(--shadow-3);
+            animation: slideIn 0.5s ease-out;
+            margin-top: 24px;
+        }
+
+        .result-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .result-icon {
+            font-size: 2rem;
+        }
+
+        .result-title {
+            color: var(--color-2);
+            font-size: 1.5rem;
+            font-weight: 500;
+        }
+
+        .result-content {
+            padding: 24px;
+            border-radius: 12px;
+            text-align: center;
+            font-size: 1.8rem;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+        }
+
+        .result-ai {
+            background: linear-gradient(135deg, var(--color-4) 0%, var(--color-1) 100%);
+            color: var(--color-2);
+            border: 3px solid var(--color-3);
+        }
+
+        .result-human {
+            background: linear-gradient(135deg, var(--color-5) 0%, var(--color-4) 100%);
+            color: var(--color-2);
+            border: 3px solid var(--color-3);
+        }
+
+        .result-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            margin-top: 16px;
+            background: white;
+            color: var(--color-2);
+            box-shadow: var(--shadow-1);
+        }
+
+        .error-card {
+            background: linear-gradient(135deg, #ffebee 0%, #ffcdd2 100%);
+            border-left: 4px solid #e53935;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 24px;
+            animation: shake 0.5s ease-out;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .error-icon {
+            color: #e53935;
+            font-size: 1.5rem;
+        }
+
+        .error-text {
+            color: #c62828;
+            font-weight: 500;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            color: var(--color-2);
+            font-size: 0.9rem;
+            font-weight: 300;
+        }
+
+        .info-box {
+            background: linear-gradient(135deg, var(--color-5) 0%, var(--color-1) 100%);
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 24px;
+            border-left: 4px solid var(--color-2);
+        }
+
+        .info-box h3 {
+            color: var(--color-2);
+            font-size: 1rem;
+            font-weight: 500;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .info-box p {
+            color: var(--color-2);
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+
+        /* Animations */
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .card {
+                padding: 24px;
+            }
+
+            .result-content {
+                font-size: 1.4rem;
+            }
+        }
+
+        /* Loading state */
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
 </head>
 <body>
-  <h1>Text Classifier</h1>
+    <div class="container">
+        <div class="header">
+            <h1>
+                <span class="material-icons header-icon">psychology</span>
+                AI Essay Classifier
+            </h1>
+            <p>Determine if an essay was written by AI or a human</p>
+        </div>
 
-  {% if error %}
-    <div style="color: red;">{{ error }}</div>
-  {% endif %}
+        {% if result and not result.success %}
+        <div class="error-card">
+            <span class="material-icons error-icon">error_outline</span>
+            <span class="error-text">{{ result.error }}</span>
+        </div>
+        {% endif %}
 
-  <form method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Classify</button>
-  </form>
+        <div class="card">
+            <form method="POST" id="classifierForm">
+                <div class="form-group">
+                    <label for="text">
+                        <span class="material-icons" style="vertical-align: middle; margin-right: 4px; font-size: 1.2rem;">description</span>
+                        Paste Essay Text
+                    </label>
+                    <textarea
+                        name="text"
+                        id="text"
+                        placeholder="Paste the essay text here for classification..."
+                        required
+                    >{{ text if text else '' }}</textarea>
+                </div>
 
-  {% if result %}
-    <h2>Result</h2>
-    <pre>{{ result }}</pre>
-  {% endif %}
+                <button type="submit" class="btn">
+                    <span class="material-icons btn-icon">analytics</span>
+                    Classify Text
+                </button>
+            </form>
+
+            <div class="info-box">
+                <h3>
+                    <span class="material-icons" style="font-size: 1rem;">info</span>
+                    How it works
+                </h3>
+                <p>
+                    This classifier uses machine learning to analyze the text and determine whether it was likely
+                    written by AI or a human. The model examines writing patterns, vocabulary usage, and stylistic
+                    features to make its prediction.
+                </p>
+            </div>
+        </div>
+
+        {% if result and result.success %}
+        <div class="result-card">
+            <div class="result-header">
+                <span class="material-icons result-icon" style="color: var(--color-2);">assessment</span>
+                <h2 class="result-title">Classification Result</h2>
+            </div>
+
+            {% if result.prediction == "AI-Generated" %}
+            <div class="result-content result-ai">
+                <div>
+                    <span class="material-icons" style="font-size: 3rem; vertical-align: middle;">smart_toy</span>
+                    <div style="margin-top: 12px;">{{ result.prediction }}</div>
+                </div>
+                <div class="result-badge">
+                    <span class="material-icons" style="font-size: 1rem;">computer</span>
+                    This text appears to be generated by AI
+                </div>
+            </div>
+            {% else %}
+            <div class="result-content result-human">
+                <div>
+                    <span class="material-icons" style="font-size: 3rem; vertical-align: middle;">person</span>
+                    <div style="margin-top: 12px;">{{ result.prediction }}</div>
+                </div>
+                <div class="result-badge">
+                    <span class="material-icons" style="font-size: 1rem;">edit</span>
+                    This text appears to be written by a human
+                </div>
+            </div>
+            {% endif %}
+        </div>
+        {% endif %}
+
+        <div class="footer">
+            <p>ML-Powered Text Classification System</p>
+            <p style="margin-top: 8px; opacity: 0.7;">Built with Flask & Machine Learning</p>
+        </div>
+    </div>
+
+    <script>
+        // Optional: Add loading state to button when form is submitted
+        document.getElementById('classifierForm').addEventListener('submit', function(e) {
+            const btn = this.querySelector('.btn');
+            const originalContent = btn.innerHTML;
+            btn.innerHTML = '<span class="loading"></span> Analyzing...';
+            btn.disabled = true;
+
+            // Re-enable button if form validation fails
+            setTimeout(() => {
+                if (!this.checkValidity()) {
+                    btn.innerHTML = originalContent;
+                    btn.disabled = false;
+                }
+            }, 100);
+        });
+
+        // Auto-resize textarea
+        const textarea = document.getElementById('text');
+        textarea.addEventListener('input', function() {
+            this.style.height = 'auto';
+            this.style.height = (this.scrollHeight) + 'px';
+        });
+    </script>
 </body>
 </html>
