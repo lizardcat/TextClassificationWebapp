@@ -1,0 +1,26 @@
+<!-- html -->
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Text Classifier</title>
+</head>
+<body>
+  <h1>Text Classifier</h1>
+
+  {% if error %}
+    <div style="color: red;">{{ error }}</div>
+  {% endif %}
+
+  <form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Classify</button>
+  </form>
+
+  {% if result %}
+    <h2>Result</h2>
+    <pre>{{ result }}</pre>
+  {% endif %}
+</body>
+</html>
