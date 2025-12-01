@@ -6,9 +6,11 @@ A Flask-based web application that uses machine learning to classify text as eit
 
 - ✨ Clean, modern Material Design UI
 - 🤖 ML-powered text classification (AI vs Human)
+- 📊 **Confidence scores** with visual probability bars
 - 📱 Responsive design for mobile and desktop
 - ⚡ Fast predictions using pre-trained models
 - 🎨 Custom color palette with smooth animations
+- 📈 Detailed prediction breakdown (Human % vs AI %)
 
 ## Technology Stack
 
@@ -106,7 +108,10 @@ The application will start on `http://localhost:5000`
 1. Open your browser and navigate to `http://localhost:5000`
 2. Paste essay text into the text area
 3. Click "Classify Text"
-4. View the prediction result (AI-Generated or Human-Written)
+4. View the prediction result with:
+   - Classification (AI-Generated or Human-Written)
+   - Confidence score (percentage)
+   - Probability breakdown (Human % vs AI %)
 
 ## API Endpoint
 
@@ -125,7 +130,12 @@ The application also provides a REST API endpoint for programmatic access:
 ```json
 {
   "success": true,
-  "prediction": "AI-Generated"
+  "prediction": "AI-Generated",
+  "confidence": 87.35,
+  "probabilities": {
+    "human": 12.65,
+    "ai": 87.35
+  }
 }
 ```
 
@@ -175,14 +185,28 @@ gunicorn -w 4 -b 0.0.0.0:5000 app:app
 
 The entire UI is contained in `templates/index.html`. All styles are inline using CSS variables for the color scheme, making it easy to customize.
 
-### Updating ML Models
+### Improving & Retraining ML Models
 
-To update the machine learning models:
+The current model provides a baseline accuracy. For better performance:
 
-1. Train your new models using the same preprocessing pipeline
-2. Save them as `.pkl` files using `pickle`
-3. Replace the files in `TextClassificationWebapp/ml_assets/`
-4. Restart the Flask application
+**See the comprehensive [TRAINING_GUIDE.md](TRAINING_GUIDE.md) for:**
+- Recommended Kaggle datasets (DAIGT V2, AI vs Human Text, etc.)
+- Complete retraining script with hyperparameter tuning
+- Expected accuracy improvements (baseline ~65% → optimized ~92-95%)
+- Advanced techniques (ensemble methods, transformer models)
+- Data collection and augmentation tips
+
+**Quick steps:**
+1. Download a Kaggle dataset (e.g., DAIGT V2 - 150K+ essays)
+2. Run the training script from `TRAINING_GUIDE.md`
+3. New models automatically save to `TextClassificationWebapp/ml_assets/`
+4. Restart Flask application to load improved models
+
+**Current Model:**
+- Type: MLPClassifier (Neural Network)
+- Architecture: 64→32 neurons, ReLU activation
+- Pipeline: Text → TF-IDF → StandardScaler → PCA → Prediction
+- Output: Binary classification with confidence scores
 
 ## Troubleshooting
 

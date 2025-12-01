@@ -131,18 +131,29 @@ def predict_text(raw_text):
         # Step 4: PCA
         x_test_pca = pca.transform(x_test_scaled)
 
-        # Step 5: Prediction
+        # Step 5: Prediction with probability scores
         prediction = model.predict(x_test_pca)[0]
+        probabilities = model.predict_proba(x_test_pca)[0]
+
+        # probabilities[0] = probability of class 0 (Human-Written)
+        # probabilities[1] = probability of class 1 (AI-Generated)
 
         # Convert numeric prediction to human-readable label
         if prediction == 1:
             result = "AI-Generated"
+            confidence = probabilities[1] * 100  # AI probability
         else:
             result = "Human-Written"
+            confidence = probabilities[0] * 100  # Human probability
 
         return {
             'success': True,
-            'prediction': result
+            'prediction': result,
+            'confidence': round(confidence, 2),
+            'probabilities': {
+                'human': round(probabilities[0] * 100, 2),
+                'ai': round(probabilities[1] * 100, 2)
+            }
         }
 
     except Exception as e:
